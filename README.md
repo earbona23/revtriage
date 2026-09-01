@@ -50,6 +50,7 @@ rule that produced it, and any one of which you can disagree with specifically.
 ## Contents
 
 - [The problem this solves](#the-problem-this-solves)
+- [When you would actually reach for this](#when-you-would-actually-reach-for-this)
 - [The Active Defense Trilogy](#the-active-defense-trilogy)
 - [Five minutes, no samples of your own](#five-minutes-no-samples-of-your-own)
 - [Provenance: the indicator that only exists after three decodes](#provenance-the-indicator-that-only-exists-after-three-decodes)
@@ -80,6 +81,44 @@ they have been caught. `revtriage` answers exactly that, and shows its work.
 It is a triage tool, deliberately. It will not name a family, it will not unpack a
 commercial protector, and it does not pretend to replace a sandbox or an analyst. It
 decides **what a human looks at first**, and it is honest about what it could not see.
+
+## When you would actually reach for this
+
+**The sandbox queue is forty minutes deep and the bridge call is now.** You need to know
+whether this thing persists and calls out, not what family it belongs to. That answer is
+in the bytes and takes under a second.
+
+**You cannot upload it.** This is the case people underestimate. Uploading a targeted
+sample to a public multi-scanner tells the author it landed and that someone is looking —
+retrieval hashes are searchable, and more than one intrusion has been burned that way.
+Worse, an attachment sent to your legal or HR team *is client data*, and pushing it to a
+third party is a disclosure with your name on it. `revtriage` never opens a socket, so
+neither of those decisions is ever on the table.
+
+**Air-gapped, classified, or regulated environments** where nothing leaves the network and
+"install these forty dependencies" is not an option. `pip install`, zero third-party
+packages, done.
+
+**Two hundred attachments from one phishing wave.** Loop the CLI, sort by score, read the
+top ten. The other hundred and ninety come with a report explaining why they scored low,
+which is the part that lets you defend the decision not to look at them.
+
+**As a CI gate.** `--exit-code` makes the verdict the process exit status, so a build can
+refuse an artefact, an upload endpoint can quarantine a file, and a pipeline can fail on a
+dropped payload without a human in the loop.
+
+**Feeding a TIP or a SIEM.** The STIX 2.1 bundle imports into MISP, OpenCTI or Sentinel
+with the indicators, the ATT&CK techniques and the provenance intact. The JSON contract is
+stable, so a wrapper script written once keeps working.
+
+**Teaching, and interviews.** Every score is eight statements you can argue with, and the
+layer table shows exactly where a C2 URL was hiding. It is a much better artefact for
+explaining *why* a file is bad than a vendor verdict of `Trojan.Generic.31337`.
+
+**When it is the wrong tool:** the sample is packed by a commercial protector (you will get
+high entropy, a tiny import table, and a note saying so — that is a signal, not analysis),
+you need runtime behaviour (that is a sandbox, permanently out of scope), or you need
+family attribution. This decides what a human looks at first. It does not decide guilt.
 
 ## The Active Defense Trilogy
 
