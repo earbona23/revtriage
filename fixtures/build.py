@@ -167,6 +167,30 @@ def remote_template_docx() -> tuple[bytes, str]:
     return buffer.getvalue(), "OOXML .docx (no macro) with an external attachedTemplate relationship — remote template injection."
 
 
+def clr_loader() -> tuple[bytes, str]:
+    """A loader-shaped strings blob that trips the EXTENDED (PRO) rules.
+
+    Every other fixture exercises the free tier. This one exists because a guarantee that
+    is never exercised is not a guarantee: without a sample that fires an extended rule,
+    "a PRO licence never changes a free-tier verdict" is true only because nothing ever
+    happens, and the test asserting it passes vacuously. This blob carries the string
+    evidence of ETW blinding, a named-pipe channel and in-memory CLR hosting alongside
+    ordinary injection APIs, so free and PRO genuinely see different things — and the
+    score still has to come out identical.
+
+    Inert: strings only, no header, no entry point, nothing executable.
+    """
+    body = (
+        b"ldr: stage two\n"
+        b"GetProcAddress\x00ntdll.dll\x00EtwEventWrite\x00NtTraceEvent\x00"
+        b"VirtualAlloc\x00WriteProcessMemory\x00CreateRemoteThread\x00"
+        b"\\\\.\\pipe\\svcctl_a91f\x00CreateNamedPipeW\x00"
+        b"ICLRRuntimeHost\x00CorBindToRuntime\x00mscoree.dll\x00"
+        b"beacon=" + SINK_URL.encode() + b"\x00"
+    )
+    return body, "Loader strings blob: ETW blinding, a named-pipe channel and in-memory CLR hosting — the sample that exercises the extended (PRO) rule tier."
+
+
 def benign_text() -> tuple[bytes, str]:
     body = (
         "# Deployment notes\n\n"
@@ -183,6 +207,7 @@ BUILDERS = {
     "xor_config.bin": xor_config,
     "fake_injector.exe": fake_pe,
     "remote_template.docx": remote_template_docx,
+    "clr_loader.bin": clr_loader,
     "benign_readme.txt": benign_text,
 }
 

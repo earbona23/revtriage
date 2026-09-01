@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from revtriage.analyze import analyze
 from revtriage.report import to_json, to_markdown, to_stix_bundle, validate_bundle
 
@@ -66,3 +68,52 @@ def test_validator_catches_a_broken_bundle():
     bad = {"type": "bundle", "id": "bundle--not-a-uuid", "objects": [{"type": "indicator", "id": "x"}]}
     problems = validate_bundle(bad)
     assert problems  # the validator must actually reject malformed input
+
+
+def test_validator_names_the_defect_it_found(valid_bundle):
+    """Each check is asserted by the message it produces, not by the list being non-empty.
+
+    `assert problems` is satisfied by ANY complaint, so a bundle with two defects keeps the
+    test green after one of the two checks is deleted. Every invariant below is broken on
+    its own, in an otherwise valid bundle, and matched by name.
+    """
+    import copy
+
+    def problems_after(mutate) -> list[str]:
+        bundle = copy.deepcopy(valid_bundle)
+        mutate(bundle)
+        return validate_bundle(bundle)
+
+    def sets(field, value):
+        def apply(bundle):
+            bundle["objects"][0][field] = value
+        return apply
+
+    assert validate_bundle(copy.deepcopy(valid_bundle)) == []
+
+    malformed = problems_after(sets("id", "not-a-stix-id"))
+    assert any("malformed id" in p for p in malformed), malformed
+
+    # A well-formed id that belongs to the wrong type: the objects[0] here is an
+    # `identity`, so an `indicator--` id must be caught by the prefix check alone.
+    prefix = problems_after(sets("id", "indicator--00000000-0000-4000-8000-000000000000"))
+    assert any("prefix does not match type" in p for p in prefix), prefix
+
+    def break_bundle_type(bundle):
+        bundle["type"] = "collection"
+
+    assert any("type is not 'bundle'" in p for p in problems_after(break_bundle_type))
+
+    def empty_objects(bundle):
+        bundle["objects"] = []
+
+    assert any("non-empty list" in p for p in problems_after(empty_objects))
+
+
+@pytest.fixture
+def valid_bundle(corpus):
+    """A real, valid bundle — the baseline the per-defect assertions mutate."""
+    triage = analyze(corpus["powershell_dropper.ps1"], name="powershell_dropper.ps1")
+    bundle = to_stix_bundle(triage)
+    assert validate_bundle(bundle) == []
+    return bundle

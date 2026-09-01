@@ -12,6 +12,7 @@ import os
 from revtriage.analyze import FEATURE_EXTENDED_RULES, FEATURE_SANDBOX, analyze
 from revtriage.license import keys
 from revtriage.license.verify import build_token, verify_token
+from revtriage.scoring import compute_score
 
 
 def test_benign_control_scores_benign(corpus):
@@ -62,9 +63,12 @@ def _pro_license(features=("*",)):
 
 
 def test_pro_extended_rules_are_additive(corpus):
-    data = corpus["fake_injector.exe"]
-    free = analyze(data, name="fake_injector.exe")
-    pro = analyze(data, name="fake_injector.exe", license_result=_pro_license())
+    # clr_loader.bin is the ONLY sample that fires an extended rule. Using any other one
+    # makes this test pass because nothing happened, which is how a guarantee quietly
+    # stops being tested: the assertions still read correctly and prove nothing.
+    data = corpus["clr_loader.bin"]
+    free = analyze(data, name="clr_loader.bin")
+    pro = analyze(data, name="clr_loader.bin", license_result=_pro_license())
 
     # The core verdict and score are identical with and without the licence.
     assert pro.score.value == free.score.value
@@ -80,6 +84,35 @@ def test_pro_extended_rules_are_additive(corpus):
     free_rules = {m.rule_id for m in free.matches}
     pro_rules = {m.rule_id for m in pro.matches}
     assert free_rules <= pro_rules
+
+    # Non-vacuity: PRO must actually have found something extra here, or every assertion
+    # above is satisfied by an empty difference.
+    extra = pro_rules - free_rules
+    assert extra, "no extended rule fired: this test would pass with the guarantee removed"
+    assert all(rule.startswith("ext.") for rule in extra)
+
+
+def test_the_score_freeze_is_load_bearing_not_a_coincidence(corpus):
+    """The scores match because analyze() freezes the number before extended rules run —
+    not because the extended matches happen to be worth nothing.
+
+    Without this, `test_pro_extended_rules_are_additive` still passes if someone moves the
+    score computation after the extended pass, provided the extra matches add zero. This
+    test asserts the counterfactual: scoring the PRO match set gives a DIFFERENT number,
+    so the freeze is the only reason the verdict holds still.
+    """
+    data = corpus["clr_loader.bin"]
+    free = analyze(data, name="clr_loader.bin")
+    pro = analyze(data, name="clr_loader.bin", license_result=_pro_license())
+
+    would_be = compute_score(pro.matches)
+    assert would_be.value != free.score.value
+    assert would_be.value > free.score.value
+    # And it is not a rounding difference: it crosses a verdict band.
+    assert would_be.verdict != free.score.verdict
+    # Yet what the tool actually reports is the free number, on both tiers.
+    assert pro.score.value == free.score.value
+    assert pro.score.verdict == free.score.verdict
 
 
 def test_unlicensed_extended_is_skipped_with_reason(corpus):

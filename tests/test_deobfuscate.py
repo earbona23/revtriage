@@ -8,11 +8,20 @@ recovered *content* and the provenance, and several name the mutation they kill.
 from __future__ import annotations
 
 import base64
+import bz2
 import gzip
+import random
+import zlib
 
 from revtriage.deobfuscate import compression, encoding, powershell, xor
 from revtriage.deobfuscate.pipeline import deobfuscate
-from revtriage.deobfuscate.score import KEEP_THRESHOLD, interest, is_interesting
+from revtriage.deobfuscate.score import (
+    KEEP_THRESHOLD,
+    MARKERS,
+    interest,
+    is_interesting,
+    opens_as_compressed,
+)
 
 
 # -- encoding ------------------------------------------------------------------------
@@ -91,11 +100,48 @@ def test_marker_bearing_blob_is_kept():
 
 
 def test_pure_noise_is_rejected():
-    import os
+    """Noise carries no marker, low printability and no real words: below the threshold.
 
-    noise = os.urandom(2048)
-    # Random bytes carry no marker, low printability, no words: below the keep threshold.
+    The buffer is SEEDED, not `os.urandom`. Two random bytes land on `\\\\` — one of the
+    markers, worth 40 on its own — about three times in a hundred 2 KB draws, so the
+    unseeded version of this test failed roughly 3% of the time. Multiplied across a nine
+    job CI matrix that is a red build on a quarter of all pushes, blamed on the runner.
+    """
+    noise = random.Random(1337).randbytes(2048)
+    assert not [m for m in MARKERS if m.lower() in noise.lower()], "premise broken: seeded noise carries a marker"
     assert not is_interesting(noise)
+
+
+def test_compressed_bonus_requires_a_stream_that_really_opens():
+    """The +40 for "this is compressed" is a verification, not a magic-number sniff.
+
+    Compressed bytes score zero on every readability signal, so the keep-gate hands them a
+    large bonus on the strength of the header. If that bonus were awarded for the header
+    alone, any two bytes of noise beginning 0x1f 0x8b would become a layer, and the report
+    would fill with the garbage the gate exists to keep out.
+
+    The impostor bodies are a fixed byte pattern, not `os.urandom`. A random body after a
+    `0x78` byte forms a structurally valid zlib header roughly one time in 31 — a test that
+    fails 3% of the time is worse than no test, because the failure gets blamed on the CI.
+    """
+    filler = bytes((i * 37 + 11) % 256 for i in range(512))
+
+    real = gzip.compress(b"a genuine body, long enough to be worth keeping, with words in it")
+    assert opens_as_compressed(real)
+    assert is_interesting(real)
+
+    # Same magic, nothing behind it: the compression method byte is invalid, so the
+    # stream cannot open. No other signal can rescue it — the body is unreadable noise.
+    assert not opens_as_compressed(b"\x1f\x8b\x00" + filler)
+    assert not is_interesting(b"\x1f\x8b\x00" + filler)
+
+    # 0x78 0x00 is deliberately not a valid zlib header: (0x78 << 8 | 0x00) % 31 != 0.
+    assert not opens_as_compressed(b"\x78\x00" + filler)
+    assert not opens_as_compressed(b"BZh\x00" + filler)
+
+    # And the real things still open, on every algorithm the gate claims to verify.
+    assert opens_as_compressed(zlib.compress(b"a real zlib stream with readable content"))
+    assert opens_as_compressed(bz2.compress(b"a real bzip2 stream with readable content"))
 
 
 def test_keep_threshold_boundary_is_inclusive():
