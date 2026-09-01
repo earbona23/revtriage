@@ -1,0 +1,35 @@
+# The license SIGNING key must never be committed. Only the public key ships (embedded
+# in src/revtriage/license/keys.py). The whole .secrets/ directory stays local.
+.secrets/
+*.pem
+!tests/fixtures/**/*.pem
+
+# Analysis output can contain paths and indicators from a real investigation.
+/out/
+/generated/
+revtriage-*.md
+revtriage-*.json
+revtriage-*.stix.json
+revtriage-*.html
+
+# Generated sample corpus. We ship the generator (fixtures/build.py), not binaries.
+fixtures/generated/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.env
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

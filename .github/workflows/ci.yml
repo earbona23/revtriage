@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }} / py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install (editable, with dev extras)
+        run: python -m pip install -e ".[dev]"
+
+      - name: Rule + catalogue integrity
+        run: >-
+          python -c "import sys; sys.path.insert(0,'src');
+          from revtriage.capabilities.rules import CORE_RULES, EXTENDED_RULES, validate_rules;
+          p = validate_rules(CORE_RULES) + validate_rules(EXTENDED_RULES);
+          print('rule integrity:', 'OK' if not p else p); sys.exit(1 if p else 0)"
+
+      - name: Run tests
+        run: python -m pytest -p no:cacheprovider
+
+      - name: End-to-end demo (build a sample, triage it, validate the STIX)
+        run: >-
+          python fixtures/build.py &&
+          python -m revtriage.cli fixtures/generated/powershell_dropper.ps1 -f stix -o demo.stix.json &&
+          python -c "import json,sys; sys.path.insert(0,'src');
+          from revtriage.report.stix import validate_bundle;
+          b=json.load(open('demo.stix.json'));
+          p=validate_bundle(b);
+          print('STIX valid' if not p else p); sys.exit(1 if p else 0)"
