@@ -1,5 +1,7 @@
 # revtriage
 
+> 🔎 **Try this and the whole suite online — no install:** [consulting.arrankago.com](https://consulting.arrankago.com) · plus managed security and M365/Entra identity assessments for teams.
+
 [![CI](https://github.com/earbona23/revtriage/actions/workflows/ci.yml/badge.svg)](https://github.com/earbona23/revtriage/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB)](https://www.python.org/downloads/)
 [![Licence: MIT](https://img.shields.io/badge/Licence-MIT-blue.svg)](LICENSE)
