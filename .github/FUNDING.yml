@@ -1,5 +1,3 @@
 # revtriage is open-core: the triage engine is MIT and free forever. Sponsorship funds
-# the maintained ATT&CK rule catalogue and the PRO tier (extended rules, HTML report).
+# the maintained ATT&CK rule catalogue; PRO licences are the other way to support it.
 github: [earbona23]
-polar: earbona23
-custom: ["https://github.com/earbona23/revtriage"]

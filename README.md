@@ -423,7 +423,16 @@ revtriage is **open-core**: the triage engine is MIT and free forever. Nothing t
 decides a verdict is behind the licence.
 
 - **[GitHub Sponsors](https://github.com/sponsors/earbona23)** — any amount.
-- **[Polar](https://polar.sh/earbona23)** — PRO licences.
+- **PRO licences** — email earbona@arrankago.com. A Polar storefront is on the way.
+
+## More tools like this
+
+Part of a small suite of dependency-free security tools I maintain. Each one runs
+offline, ships its own tests, and maps its detections to MITRE ATT&CK.
+
+- **[entraform](https://github.com/earbona23/entraform)** — catch risky Entra/Azure changes in a Terraform plan, before apply.
+- **[entra-tripwire](https://github.com/earbona23/entra-tripwire)** — decoy identities in Entra ID that fire the moment someone touches them.
+- **[containment-cut](https://github.com/earbona23/containment-cut)** — the minimum-cost set of actions that provably severs a compromised identity, with a proof.
 
 ## Licence
 
