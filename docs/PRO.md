@@ -16,6 +16,15 @@ Set the key in the environment, or write it to the config file:
 Free-tier verdicts never change when a key is present — Pro adds detail, it does not
 move the score.
 
-## Buying a licence
-Licences are sold through a merchant of record (a Polar storefront is on the way). To
-buy one now, or to ask about volume, email earbona@arrankago.com.
+## Pricing
+
+Per organisation, unlimited seats. The licence is a signed file, verified offline — no
+account, no phone-home.
+
+| | Monthly | Annual (two months free) |
+|---|:--:|:--:|
+| This tool, Pro | US$29 | US$290 |
+| All three tools (revtriage · EntraTripwire · containment-cut) | US$69 | US$690 |
+
+To buy, email **earbona@arrankago.com** with the name to put on the licence. You get the
+key by return email, usually the same day.

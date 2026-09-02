@@ -423,7 +423,7 @@ revtriage is **open-core**: the triage engine is MIT and free forever. Nothing t
 decides a verdict is behind the licence.
 
 - **[GitHub Sponsors](https://github.com/sponsors/earbona23)** — any amount.
-- **PRO licences** — email earbona@arrankago.com. A Polar storefront is on the way.
+- **PRO licences** — from US$29/mo per org (US$290/yr), all seats. Email earbona@arrankago.com · [pricing](docs/PRO.md#pricing).
 
 ## More tools like this
 
