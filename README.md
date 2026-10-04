@@ -1,5 +1,9 @@
 # revtriage
 
+> **Maintained.** One of the four tools here I keep current: bug fixes, dependency and
+> rule-catalogue updates, and issues answered. The rest of my tools are published as
+> snapshots and say so at the top of their README.
+
 > 🔎 **Try this and the whole suite online — no install:** [consulting.arrankago.com](https://consulting.arrankago.com) · plus managed security and M365/Entra identity assessments for teams.
 
 [![CI](https://github.com/earbona23/revtriage/actions/workflows/ci.yml/badge.svg)](https://github.com/earbona23/revtriage/actions/workflows/ci.yml)

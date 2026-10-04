@@ -24,7 +24,11 @@ account, no phone-home.
 | | Monthly | Annual (two months free) |
 |---|:--:|:--:|
 | This tool, Pro | US$29 | US$290 |
-| All three tools (revtriage · EntraTripwire · containment-cut) | US$69 | US$690 |
+| Both tools (revtriage · EntraTripwire) | US$69 | US$690 |
+
+containment-cut is listed as a third tool elsewhere, but its Pro features are not
+implemented yet, so it is **not part of this bundle and not on sale** — see
+[its Pro page](https://github.com/earbona23/containment-cut/blob/main/docs/pro.md).
 
 To buy, email **earbona@arrankago.com** with the name to put on the licence. You get the
 key by return email, usually the same day.
