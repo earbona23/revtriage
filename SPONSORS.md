@@ -1,18 +1,12 @@
 # Sponsors
 
-These are the people and companies who keep revtriage maintained and MIT-licensed.
-Thank you — this file is how the project says it in public.
+`revtriage` is MIT and it stays free. Nothing that decides a verdict sits behind a licence,
+and that is not going to change.
 
-Want to be here? Sponsor at https://github.com/sponsors/earbona23. Tiers, one-time
-and custom amounts are listed there; named tiers appear in this file on the next
-release after you sign up.
+What sponsorship pays for is the part with an ongoing cost: keeping the rule catalogue
+current, tracking the Microsoft Graph and platform changes that quietly break a check,
+answering issues, and cutting the releases that follow. Tiers, one-time amounts and what
+each one includes are listed at https://github.com/sponsors/earbona23.
 
-## Companies
-
-<!-- Company logos and links go here, most recent first. -->
-_None yet. The first one goes here._
-
-## Individuals
-
-<!-- Names and links go here. -->
-_None yet. The first one goes here._
+Sponsors on a named tier are credited in this file, most recent first, from the first
+release after they sign up. If you would rather not be listed, say so and you will not be.
