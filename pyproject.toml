@@ -9,7 +9,7 @@ description = "Offline reverse-engineering triage: capability graph, IOCs, expla
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-authors = [{ name = "Eduard Arbona" }]
+authors = [{ name = "Eduard Arbona", email = "earbona@arrankago.com" }]
 keywords = [
   "malware-analysis", "triage", "reverse-engineering", "dfir", "blue-team",
   "ioc", "stix", "mitre-attack", "offline", "deobfuscation",
